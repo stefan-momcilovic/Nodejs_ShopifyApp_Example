@@ -175,7 +175,8 @@ sequelize.sync()
           await Shopify.Utils.graphqlProxy(ctx.req, ctx.res);
         }
       );
-
+      
+      // Our routes //
       router.use( apiRouter.routes() );
       router.use( apiRouter.allowedMethods() );
 
@@ -185,6 +186,7 @@ sequelize.sync()
         ctx.status = 200;
         ctx.message = "Success!";
       });
+      // End of Our routes //
 
       // Handling errors //
       server.use(async (ctx, next) => {
@@ -196,6 +198,7 @@ sequelize.sync()
           ctx.app.emit('error', err, ctx);
         }
       });
+      // End of Handling error //
 
       router.get("(/_next/static/.*)", handleRequest); // Static content is clear
       router.get("/_next/webpack-hmr", handleRequest); // Webpack content is clear
@@ -227,6 +230,8 @@ sequelize.sync()
                 status: charge.data.node.status,
                 gid: charge.data.node.id,
               });
+
+              console.log( "HELLO::::", billing_table_query);
 
               if(billing_table_query){
                 ctx.redirect(`/?shop=${ctx.session.shop}&host=${ctx.session.host}`);
@@ -265,6 +270,7 @@ sequelize.sync()
         }
       });
       
+      // Services that we use //
       server.use(cors());
       server.use(async (ctx, next) => {
         if (ctx.path === '/webhooks') ctx.disableBodyParser = true;
@@ -286,6 +292,8 @@ sequelize.sync()
         br: false // disable brotli
       }));
       server.use(logger());
+      // End of services that we use //
+
       server.use(router.allowedMethods());
       server.use(router.routes());
       server.listen(port, () => {
